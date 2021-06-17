@@ -1,5 +1,5 @@
 var mongoose = require('mongoose');
-mongoose.connect('mongodb+srv://Bhushan_Bire:kohli183@cluster0.7c1th.mongodb.net/dcfApp?retryWrites=true&w=majority', {useNewUrlParser: true}, {dbName: 'DcfApp'});
+mongoose.connect('mongodb+srv://Bhushan_Bire:kohli183@cluster0.7c1th.mongodb.net/dcfApp?retryWrites=true&w=majority', {useNewUrlParser: true}, {dbName: 'DcfApp'}, { useUnifiedTopology: true });
  
 var conn = mongoose.connection;
  
