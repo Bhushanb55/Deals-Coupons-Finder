@@ -4,7 +4,7 @@ var db = require('../Database');
 var adminSchema = new mongoose.Schema({
  full_name: String,
  email_address:String,
- password:String,
- mobile_number:Number
+ mobile_number:Number,
+ password:String
  });
 module.exports=mongoose.model('Admin',adminSchema,'admins');
