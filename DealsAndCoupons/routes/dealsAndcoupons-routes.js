@@ -1,6 +1,6 @@
 //const express = require('express');
 //const app = express();
-var adminController = require('../controllers/insert-admin-controller');
+var adminController = require('../controllers/insert-dealsAndcoupons-controller');
 var userController = require('../../User/controllers/insert-user-controller');
 // var router = express.Router();
 var adminModel = require('../models/admin-models');
@@ -12,8 +12,10 @@ var userModel = require('../../User/models/user-models');
 //app.use(bodyParser.json());
 //const PORT = 3002;
 
+
 const express = require('express')
 const router = express.Router();
+
 
 /*
  @openapi
