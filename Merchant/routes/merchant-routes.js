@@ -1,32 +1,27 @@
 const express = require('express');
 const app = express();
-var userContoller = require('../controllers/insert-user-controller');
+var merchantContoller = require('../controllers/insert-merchant-controller');
 
-//for JWT Authentication
-const userModel = require('../models/user-models');
+const merchantModel = require('../models/merchant-models');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const mongoose = require('mongoose');
 const router = express.Router();
 
-// const bodyParser = require('body-parser');
-// app.use(bodyParser.urlencoded({extended: true}));  
-// app.use(bodyParser.json());
 
-
-router.get('/users', function (req, res) {
+router.get('/merchants', function (req, res) {
     // console.log(req.get('Content-Type')); 
-    // res.send("Hello World!! Welcome Users!!");
-    userModel.find({}).then(function (users) {
-        res.send(users);
+    // res.send("Hello World!! Welcome merchants!!");
+    merchantModel.find({}).then(function (merchants) {
+        res.send(merchants);
         });
 });
 
 
-router.get('/user/:id', function (req, res) {
+router.get('/merchant/:id', function (req, res) {
     // console.log(req.get('Content-Type')); 
-    // res.send("Hello World!! Welcome Users!!");
-    userModel.findById(req.params.id, (err,data) => {
+    // res.send("Hello World!! Welcome merchants!!");
+    merchantModel.findById(req.params.id, (err,data) => {
         if(err){
             res.status(404).json({success: false, error: err});
         }
@@ -36,7 +31,7 @@ router.get('/user/:id', function (req, res) {
     });
 });
 
-router.post('/users', userContoller);
+router.post('/merchants', merchantContoller);
 
 
 router.post('/api/posts', verifyToken, (req, res) => {  
@@ -52,22 +47,15 @@ router.post('/api/posts', verifyToken, (req, res) => {
     });
   });
 
-  // Verify Token
+  
 function verifyToken(req, res, next) {
-    // Get auth header value
     const bearerHeader = req.headers['authorization'];
-    // Check if bearer is undefined
     if(typeof bearerHeader !== 'undefined') {
-      // Split at the space
       const bearer = bearerHeader.split(' ');
-      // Get token from array
       const bearerToken = bearer[1];
-      // Set the token
       req.token = bearerToken;
-      // Next middleware
       next();
     } else {
-      // Forbidden
       res.sendStatus(403);
     }
   
@@ -80,16 +68,15 @@ router.post('/signup', function(req, res) {
           });
        }
        else {
-          const user = new userModel({
-             full_name: req.body.full_name,
+          const merchant = new merchantModel({
+             name: req.body.name,
              email_address: req.body.email_address,
-             password: hash,
-             mobile_number: req.body.mobile_number      
+             password: hash,     
           });
-          user.save().then(function(result) {
+          merchant.save().then(function(result) {
              console.log(result);
              res.status(200).json({
-                success: 'New user has been created..'
+                success: 'New merchant has been created..'
              });
           }).catch(error => {
              res.status(500).json({
@@ -103,10 +90,10 @@ router.post('/signup', function(req, res) {
 
  router.post('/signin', function(req, res){
 
-    userModel.findOne({email_address: req.body.email_address})
+    merchantModel.findOne({email_address: req.body.email_address})
     .exec()
-    .then(function(user) {
-       bcrypt.compare(req.body.password, user.password, function(err, result){
+    .then(function(merchant) {
+       bcrypt.compare(req.body.password, merchant.password, function(err, result){
           if(err) {
              return res.status(401).json({
                 failed: 'Unauthorized Access'
@@ -114,7 +101,7 @@ router.post('/signup', function(req, res) {
           }
           if(result) {
             const JWTToken = jwt.sign({
-            email_address: user.email_address,
+            email_address: merchant.email_address,
           },
           'secretkey',
            {
@@ -136,13 +123,13 @@ router.post('/signup', function(req, res) {
        });
     });
  });
-router.put('/users', function (req, res) {
+router.put('/merchants', function (req, res) {
     // console.log(req.get('Content-Type')); 
-    res.send("Hello World!! Welcome to update a user!!");
+    res.send("Hello World!! Welcome to update a merchant!!");
 });
-router.delete('/users', function (req, res) {
+router.delete('/merchants', function (req, res) {
     // console.log(req.get('Content-Type')); 
-    res.send("Hello World!! Welcome to delete a user!!");
+    res.send("Hello World!! Welcome to delete a merchant!!");
 });  
 
 

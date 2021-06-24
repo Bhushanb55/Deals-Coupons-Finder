@@ -1,10 +1,10 @@
 const express = require('express');
 const app = express();
-const PORT = 3001;
+const PORT = 3004;
     
-app.get('/merchant', function (req, res) {
+app.get('/deals&coupons', function (req, res) {
     // console.log(req.get('Content-Type')); 
-    res.send("Hello World!! Welcome Merchant!!");
+    res.send("Hello World!! Welcome to Deals and Coupons Microservice!!");
 });
   
 app.listen(PORT, function(err){

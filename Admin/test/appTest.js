@@ -6,6 +6,7 @@ chai.should();
 chai.use(chaiHttp)
 const server = require("../index");
 var app = request.agent(server.app);
+var adminModel = require("../models/admin-models");
 var userModel = require("../../User/models/user-models");
 
 
@@ -31,7 +32,7 @@ describe("GET Request", function () {
     });
 });
 
-describe("POST Request.", function(){
+describe("POST Request", function(){
     describe("Adding a new user into the users collection of the Deals and Coupons Finder's Users Database.",function(){
         it("Successful insertion should return status code equal to 200.", async function(){
             let res = await chai
@@ -57,7 +58,7 @@ describe("POST Request.", function(){
     });
 });
 
-describe("PUT Request.", function(){
+describe("PUT Request", function(){
     describe("Updating a user in the users collection of the Deals and Coupons Finder's Users Database.",function(){
         it("Successful updation should return status code equal to 200 and the updated user.", async function(){
             const id = "60cf35c75c2d3754dcf7259c";

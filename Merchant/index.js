@@ -1,6 +1,6 @@
 const express = require('express');
 const app = express();
-const adminsRightsRouter = require('./routes/admin-routes');
+const merchantRightsRouter = require('./routes/merchant-routes');
 
 var bodyParser = require("body-parser");
 const swaggerJsDoc = require("swagger-jsdoc");                      //body-parser = It is a middleware used for parsing the incoming body before hadndle.
@@ -37,7 +37,7 @@ app.use(bodyParser.json());   //it parses text to json
 
 
 //initialize routes
-app.use('/adminrights', adminsRightsRouter);
+app.use('/merchantrights', merchantRightsRouter);
 const PORT = 3002; 
 
 //error handling middleware
@@ -54,5 +54,5 @@ app.listen(PORT, function(err){
 
 module.exports = {
  app: app,
- adminsRightsRouter: adminsRightsRouter
+ merchantRightsRouter: merchantsRightsRouter
 }
