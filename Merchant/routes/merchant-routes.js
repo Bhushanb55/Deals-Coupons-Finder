@@ -1,7 +1,6 @@
 const express = require('express');
 const app = express();
 var merchantContoller = require('../controllers/insert-merchant-controller');
-
 const merchantModel = require('../models/merchant-models');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
@@ -71,7 +70,7 @@ router.post('/signup', function(req, res) {
           const merchant = new merchantModel({
              name: req.body.name,
              email_address: req.body.email_address,
-             password: hash,     
+             password: hash  
           });
           merchant.save().then(function(result) {
              console.log(result);
