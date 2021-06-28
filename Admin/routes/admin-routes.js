@@ -5,6 +5,11 @@ var userController = require('../../User/controllers/insert-user-controller');
 // var router = express.Router();
 var adminModel = require('../models/admin-models');
 var userModel = require('../../User/models/user-models');
+const axios = require('axios');
+const MerchantSer = 'http://localhost:3001/merchantrights'
+
+
+
 //var bodyParser = require('body-parser');
 //app.use(bodyParser.urlencoded({extended: true})); 
   
@@ -62,7 +67,7 @@ const router = express.Router();
  * @openapi
  * /adminrights/admin:
  *      get:
- *          summary: Returns list of Admins
+ *          summary: Returns list of Admins in the database.
  *          responses:
  *              200:
  *                  description: The list of the Admins
@@ -74,13 +79,19 @@ const router = express.Router();
  *                                  $ref: '#/components/schemas/admins'
  */
 
+
+
  router.get('/admin', function (req, res) {
         adminModel.find({}).then(function (admins) {
         res.send(admins);
     });
 });
-//console.log(req.get('Content-Type')); 
-//res.send("Hello World!! Welcome Admin!!");
+
+router.get('/merchants', function (req, res)  {
+    axios.get(MerchantSer + '/merchants' ).then((response) => {
+        res.send(response.data);
+    })
+});
 
 
 
@@ -91,6 +102,7 @@ const router = express.Router();
  *      description: The users managing API.
  */
 
+ 
 /**
  * @openapi
  * components:
@@ -217,7 +229,7 @@ router.post('/user', userController);
  * @openapi
  * /adminrights/admins/{id}:
  *      put:
- *          summary: Update a admin by its id in the admins collections of the Deals and Coupons Finder Admins Database.
+ *          summary: Update an Admin by its id in the admins collections in the Database.
  *          tags: [admins] 
  *          parameters:
  *            - in: path
@@ -232,7 +244,7 @@ router.post('/user', userController);
  *                  application/json:
  *                      schema:
  *                          type: object
- *                          example: {"email_address": "abx@gmail.com", "password": "abc123$%"}
+ *                          example: {"email_address": "abc@gmail.com", "password": "abc@123"}
  *          responses:
  *              '200':
  *                  description: OK.
@@ -243,8 +255,8 @@ router.post('/user', userController);
  *                              example: 
  *                                  id: 60d2066364e31665b86d6065
  *                                  full_name: Bhushan Bire
- *                                  email_address: bhushan@gmail.com
- *                                  password: bhushan@123
+ *                                  email_address: abc@gmail.com
+ *                                  password: abc@123
  *                                  mobile_number: 7020078196
  *              '404':
  *                  description: The admin was not found.
@@ -274,7 +286,7 @@ router.put('/admin/:id', function (req, res) {
  * @openapi
  * /adminrights/user/{id}:
  *      put:
- *          summary: Update a user by its id in the users collections of the Deals and Coupons Finder Users Database.
+ *          summary:  Update an User by its id in the admins collections in the Database.
  *          tags: [Users] 
  *          parameters:
  *            - in: path
@@ -289,7 +301,7 @@ router.put('/admin/:id', function (req, res) {
  *                  application/json:
  *                      schema:
  *                          type: object
- *                          example: {"email_address": "abx@gmail.com", "password": "abc123$%"}
+ *                          example: {"email_address": "abc@gmail.com", "password": "abc@123"}
  *          responses:
  *              '200':
  *                  description: OK.
@@ -300,8 +312,8 @@ router.put('/admin/:id', function (req, res) {
  *                              example: 
  *                                  id: 60d2066364e31665b86d6065
  *                                  full_name: Bhushan Bire
- *                                  email_address: bhushan@gmail.com
- *                                  password: bhushan@123
+ *                                  email_address: abc@gmail.com
+ *                                  password: abc@123
  *                                  mobile_number: 7020078196
  *              '404':
  *                  description: The user was not found.
@@ -334,7 +346,7 @@ router.put('/user/:id', function (req, res) {
  * @openapi
  * /adminrights/admins/{id}:
  *      delete:
- *          summary: Remove the admin by its id.
+ *          summary: Delete the admin by its id.
  *          tags: [admins] 
  *          parameters:
  *            - in: path
@@ -374,7 +386,7 @@ router.put('/user/:id', function (req, res) {
  * @openapi
  * /adminrights/user/{id}:
  *      delete:
- *          summary: Remove the user by its id.
+ *          summary: Delete the user by its id.
  *          tags: [Users] 
  *          parameters:
  *            - in: path
@@ -391,9 +403,8 @@ router.put('/user/:id', function (req, res) {
  *                          schema:
  *                              User's Account deleted with _id: 60d2066364e31665b86d6065
  *              '404':
- *                  description: The user was not found.
+ *                  description: The User was not found.
  */
-
 
 
 
@@ -410,12 +421,5 @@ router.delete('/user/:id', function (req, res) {
     });
 });  
 
-
-
-/*app.listen(PORT, function(err){
-    if (err) console.log(err);
-    console.log("Server listening on PORT", PORT);
-});
-*/
 
 module.exports = router;
