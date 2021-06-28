@@ -1,13 +1,13 @@
 {
-  "name": "admin",
+  "name": "dcfapp",
   "version": "1.0.0",
-  "description": "First Microservice",
+  "description": "",
   "main": "index.js",
   "scripts": {
     "start": "nodemon index.js",
-    "test": "mocha --timeout 100000"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "Bhushan",
+  "author": "",
   "license": "ISC",
   "dependencies": {
     "axios": "^0.21.1",
@@ -15,7 +15,7 @@
     "body-parser": "^1.19.0",
     "ejs": "^3.1.6",
     "express": "^4.17.1",
-    "fs": "0.0.1-security",
+    "fs": "^0.0.1-security",
     "jsonwebtoken": "^8.5.1",
     "moment": "^2.29.1",
     "mongoose": "^5.12.14",
@@ -24,10 +24,6 @@
     "swagger-ui-express": "^4.1.6"
   },
   "devDependencies": {
-    "chai": "^4.3.4",
-    "chai-http": "^4.3.0",
-    "mocha": "^9.0.1",
-    "nodemon": "^2.0.7",
-    "supertest": "^6.1.3"
+    "nodemon": "^2.0.7"
   }
 }

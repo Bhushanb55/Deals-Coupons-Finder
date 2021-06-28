@@ -3,7 +3,7 @@ var db = require('../database');
 // create an schema
 var merchantSchema = new mongoose.Schema({
 
-            name: {
+            merchant_name: {
                 type: String,
                 required: true
             },
