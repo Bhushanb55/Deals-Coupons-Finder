@@ -1,23 +1,41 @@
-var adminModel = require('../models/admin-models');
+var dealsandModel = require('../models/dealsAndcoupons-models');
 
 module.exports = function (req, res){
-    var newAdmin = new adminModel();
-    newAdmin.full_name = req.body.full_name;
-    newAdmin.email_address = req.body.email_address;
-    newAdmin.password = req.body.password;
-    newAdmin.mobile_number = req.body.mobile_number;
+    var newdealsAndcoupons = new dealsandModel();
+    newdealsAndcoupons.lmd_id = req.body.lmd_id;
+    newdealsAndcoupons.store = req.body.store;
+    newdealsAndcoupons.offer_text = req.body.offer_text;
+    newdealsAndcoupons.offer_value = req.body.offer_value;
+    newdealsAndcoupons.title = req.body.title;
+    newdealsAndcoupons.description = req.body.description;
+    newdealsAndcoupons.code = req.body.code;
+    newdealsAndcoupons.terms_and_conditions = req.body.terms_and_conditions;
+    newdealsAndcoupons.categories = req.body.categories;
+    newdealsAndcoupons.category_array = req.body.category_array;
+    newdealsAndcoupons.featured = req.body.featured;
+    newdealsAndcoupons.url = req.body.url;
+    newdealsAndcoupons.smartLink = req.body.smartLink;
+    newdealsAndcoupons.image_url = req.body.image_url;
+    newdealsAndcoupons.type = req.body.type;
+    newdealsAndcoupons.offer = req.body.offer;
+    newdealsAndcoupons.status = req.body.status;
+    newdealsAndcoupons.start_date = req.body.start_date;
+    newdealsAndcoupons.end_date = req.body.end_date;
     
+
     if(Object.keys(req.body).length === 0 ){
-        res.send("There's no data to insert..")
+        res.send("There is no data to insert....")
     }
     else{
-        newAdmin.save(function(err, created){
+        newdealsAndcoupons.save(function(err, created){
             if(err){
                 return res.status(400).json({success: false, error: err});
             }
             else{
-                res.status(200).json({success:true, data: created})
+                res.status(201).json({success:true, data: created})
             }
         });   
     }
+   
 }
+

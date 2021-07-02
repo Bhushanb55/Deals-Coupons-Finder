@@ -16,7 +16,7 @@ module.exports = function (req, res){
                 return res.status(400).json({success: false, error: err});
             }
             else{
-                res.status(200).json({success:true, data: created})
+                res.status(201).json({success:true, data: created})
             }
         });   
     }
