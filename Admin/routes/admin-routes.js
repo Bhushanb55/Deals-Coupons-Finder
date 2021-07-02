@@ -1,22 +1,17 @@
-//const express = require('express');
-//const app = express();
 var adminController = require('../controllers/insert-admin-controller');
 var userController = require('../../User/controllers/insert-user-controller');
 // var router = express.Router();
 var adminModel = require('../models/admin-models');
 var userModel = require('../../User/models/user-models');
 const axios = require('axios');
-const MerchantSer = 'http://localhost:3001/merchantrights'
+const merchantservice = 'http://localhost:3001/merchantrights'
+const userservice = 'http://localhost:3000/merchantrights'
+const dealsandcouponsservice = 'http://localhost:3006/merchantrights'
 
 
-
-//var bodyParser = require('body-parser');
-//app.use(bodyParser.urlencoded({extended: true})); 
-  
-// Parses the text as json
-//app.use(bodyParser.json());
-//const PORT = 3002;
-
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
+const mongoose = require('mongoose');
 const express = require('express')
 const router = express.Router();
 
@@ -63,9 +58,10 @@ const router = express.Router();
  */
 
 
+
 /**
  * @openapi
- * /adminrights/admin:
+ * /adminrights/admins:
  *      get:
  *          summary: Returns list of Admins in the database.
  *          responses:
@@ -81,156 +77,127 @@ const router = express.Router();
 
 
 
- router.get('/admin', function (req, res) {
+ router.get('/admins', function (req, res) {
         adminModel.find({}).then(function (admins) {
         res.send(admins);
     });
 });
 
-router.get('/merchants', function (req, res)  {
-    axios.get(MerchantSer + '/merchants' ).then((response) => {
+router.get('/users', function (req, res) {
+    axios.get(userservice+'/users').then((response) => {
         res.send(response.data);
-    })
+    });
+});
+
+router.get('/user/:id', function (req, res) {
+    axios.get(userservice +'/user/'+req.params.id).then((response) => {
+        res.send(response.data);
+    });
 });
 
 
-
-/*
- @openapi
- * tags: 
- *      name: Users
- *      description: The users managing API.
- */
-
- 
 /**
  * @openapi
- * components:
- *      schemas:
- *          User:
- *              type: object
- *              required:
- *                  - full_name
- *                  - email_address
- *                  - password
- *                  - mobile_number
- *              properties:
- *                  id:
- *                      type: string
- *                      description: The auto_generated id of the user.
- *                  full_name:
- *                      type: string
- *                      description: Name of the user.
- *                  email_address:
- *                      type: string
- *                      description: The Email-ID of the user.
- *                  password:
- *                      type: string
- *                      description: Password of the respective user.
- *                  mobile_number:
- *                      type: number
- *                      description: The 10 digit mobile number of the user.
- *              example:
- *                  id: 60d2066364e31665b86d6065
- *                  full_name: Bhushan Bire
- *                  email_address: bhushan@gmail.com
- *                  password: bhushan@123
- *                  mobile_number: 7020078196
- */
-
-
-
-/**
- * @openapi
- * /adminrights/users:
+ * /adminrights/admin/{id}:
  *      get:
- *          summary: Returns all the users stored in the users collections of the Deals and Coupons Finder Users Database.
- *          tags: [Users]  
+ *          summary: Returns a particular admin stored in the admins collections of the Deals and Coupons Admins Database.
+ *          tags: [Admins]
+ *          parameters:
+ *            - in: path
+ *              name: id
+ *              schema:
+ *                  type: string
+ *              required: true
+ *              description: The admin id.
  *          responses:
  *              200:
- *                  description: The list of the users.
+ *                  description: A particular admin.
  *                  content:
  *                      application/json:
  *                          schema:
- *                              type: array
- *                              items:
- *                                  $ref: '#/components/schemas/User'
+ *                              type: object
+ *                              example:
+ *                                  _id: 60d32df849ba05210cf89292
+ *                                  full_name: Bhushan Bire
+ *                                  email_address: bhushan@gmail.com
+ *                                  password: bhushan@123
+ *                                  mobile_number: 7020078196
+ * 
+ * 
+ *              404:
+ *                  description: The admin cannot be found.
+ *                  content: 
+ *                      application/json:
+ *                          schema:
+ *                              type: object
+ *                              example:
+ *                                  success: false
+ *                                  error: {}
  */
 
 
-router.get('/users', function (req, res) {
-    // console.log(req.get('Content-Type')); 
-    // res.send("Hello World!! Welcome Users!!");
-    userModel.find({}).then(function (users) {
-        res.send(users);
-        });
+ router.get('/admin/:id', function (req, res) {
+    adminModel.findById(req.params.id, (err,data) => {
+        if(err){
+            res.status(404).json({success: false, error: err});
+        }
+        else{
+            res.status(200).json(data);
+        }
+    });   
 });
 
 
-
-
-
 /**
  * @openapi
- * /adminrights/admins:
+ * /adminrights/adminadd:
  *      post:
- *          summary: Create a new admin in the admins collections of the Deals and Coupons Admin Database.
- *          tags: [admins] 
+ *          summary: Create a new admin in the admins collections of the DealsandCouponsAdmins Database.
+ *          tags: [Admins] 
  *          requestBody:
  *              required: true
  *              content:
  *                  application/json:
  *                      schema:
- *                          $ref: '#/components/schemas/admins'
+ *                         type: object
+ *                         example:
+ *                              {"full_name": "Bhushan Bire",  "email_address": "bhushan@gmail.com", "password": "bhushan@123", "mobile_number": 7020078196}
  *          responses:
- *              '200':
+ *              '201':
  *                  description: OK.
  *                  content:
- *                      text/plain:
+ *                      application/json:
  *                          schema:
- *                              type: string
- *                              example: Admin's Data inserted successfully.
+ *                              type: object
+ *                              example: 
+ *                                  success: true
+ *                                  data: { "_id": "60d32df849ba05210cf89292",  "full_name": "Bhushan Bire",  "email_address": "bhushan@gmail.com", "password": "bhushan@123", "mobile_number": 7020078196, "__v": 0 }
+ *              '500':
+ *                  description: There was some server error.
+ *                  content:
+ *                      application/json:
+ *                          schema:
+ *                              type: object
+ *                              example: 
+ *                                  success: false
+ *                                  error: {}                              
  */
+ router.post('/adminadd', adminController);
 
-router.post('/admin', adminController);
-
+ 
+router.post('/useradd', function (req, res) {
+    axios.post(userservice +'/useradd', req.body).then((response) => {
+        res.send(response.data);
+    });
+});
 
 
 /**
  * @openapi
- * /adminrights/user:
- *      post:
- *          summary: Create a new user in the users collections of the Deals and Coupons Finder Users Database.
- *          tags: [Users] 
- *          requestBody:
- *              required: true
- *              content:
- *                  application/json:
- *                      schema:
- *                          $ref: '#/components/schemas/User'
- *          responses:
- *              '200':
- *                  description: OK.
- *                  content:
- *                      text/plain:
- *                          schema:
- *                              type: string
- *                              example: User's Data inserted successfully.
- */
-
-router.post('/user', userController);
-
-
-
-
-
-
-/**
- * @openapi
- * /adminrights/admins/{id}:
+ * /adminrights/adminupdate/{id}:
  *      put:
- *          summary: Update an Admin by its id in the admins collections in the Database.
- *          tags: [admins] 
+ *          summary: Update an admin by its id in the admins collections of the DealsandCouponsAdmins Database.
+ *          tags: [Admins] 
  *          parameters:
  *            - in: path
  *              name: id
@@ -244,7 +211,7 @@ router.post('/user', userController);
  *                  application/json:
  *                      schema:
  *                          type: object
- *                          example: {"email_address": "abc@gmail.com", "password": "abc@123"}
+ *                          example: {"email_address": "abhinam@gmail.com", "password": "abhinam@gmail.com"}
  *          responses:
  *              '200':
  *                  description: OK.
@@ -253,101 +220,75 @@ router.post('/user', userController);
  *                          schema:
  *                              type: object
  *                              example: 
- *                                  id: 60d2066364e31665b86d6065
+ *                                  id: 60d32df849ba05210cf89292
  *                                  full_name: Bhushan Bire
- *                                  email_address: abc@gmail.com
- *                                  password: abc@123
+ *                                  email_address: bhushan@gmail.com
  *                                  mobile_number: 7020078196
+ *
+ * 
  *              '404':
  *                  description: The admin was not found.
- *              '500':
- *                  description: There was some server error.
  */
 
 
-router.put('/admin/:id', function (req, res) {
-    // console.log(req.get('Content-Type')); 
-    // res.send("Hello World!! Welcome to update an admin!!");
+ router.put('/adminupdate/:id', function (req, res) {
+    var doc = req.body
+    if(req.body.password){
+       bcrypt.hash(req.body.password, 10, function(err, hash){
+          if(err) {
+             return res.status(500).json({
+                error: err
+             });
+          }
+          else{
+             doc.password = hash;
+             adminModel.findByIdAndUpdate({_id: req.params.id}, doc , {new: true}, function(err, result){
+ 
+                if(err){
+                    return res.status(404).json({success: false, error: err});
+                }
+                else{
+                    res.status(200).json(result);
+                }
+ 
+          })
+       }
+   })
+ }
+ else{
     adminModel.findByIdAndUpdate({_id: req.params.id}, req.body , {new: true}, function(err, result){
-
-        if(err){
-            res.status(404).json(err)
-        }
-        else{
-            res.status(200).json(result)
-        }
-
-    })
+ 
+       if(err){
+           return res.status(404).json({success: false, error: err});
+       }
+       else{
+           res.status(200).json(result);
+       }
+   })
+  }
 });
-    
+
+
+router.put('/updateuser/:id', function (req, res) {
+    axios.put(userservice+ '/updateuser/' +req.params.id, req.body).then((response) => {
+        res.send(response.data);
+    });
+});
+
+
+router.delete('/user/:id', function (req, res) {
+    axios.delete(userservice+'/userdelete/'+req.params.id).then((response) => {
+        res.send(response.data);
+    });
+});  
 
 
 /**
  * @openapi
- * /adminrights/user/{id}:
- *      put:
- *          summary:  Update an User by its id in the admins collections in the Database.
- *          tags: [Users] 
- *          parameters:
- *            - in: path
- *              name: id
- *              schema:
- *                  type: string
- *              required: true
- *              description: The user id.
- *          requestBody:
- *              required: true
- *              content:
- *                  application/json:
- *                      schema:
- *                          type: object
- *                          example: {"email_address": "abc@gmail.com", "password": "abc@123"}
- *          responses:
- *              '200':
- *                  description: OK.
- *                  content:
- *                      application/json:
- *                          schema:
- *                              type: object
- *                              example: 
- *                                  id: 60d2066364e31665b86d6065
- *                                  full_name: Bhushan Bire
- *                                  email_address: abc@gmail.com
- *                                  password: abc@123
- *                                  mobile_number: 7020078196
- *              '404':
- *                  description: The user was not found.
- *              '500':
- *                  description: There was some server error.
- */
-
-
-
-router.put('/user/:id', function (req, res) {
-    // console.log(req.get('Content-Type')); 
-    // res.send("Hello World!! Welcome to update an admin!!");
-
-
-    userModel.findByIdAndUpdate({_id: req.params.id}, req.body , {new: true}, function(err, result){
-
-        if(err){
-            res.status(404).json(err)
-        }
-        else{
-            res.status(200).json(result)
-        }
-
-    })
-});
-
-
-
-/**
- * @openapi
- * /adminrights/admins/{id}:
+ * /adminrights/admindelete/{id}:
  *      delete:
- *          summary: Delete the admin by its id.
- *          tags: [admins] 
+ *          summary: Remove the admin by its id.
+ *          tags: [Admins] 
  *          parameters:
  *            - in: path
  *              name: id
@@ -361,65 +302,61 @@ router.put('/user/:id', function (req, res) {
  *                  content:
  *                      text/plain:
  *                          schema:
- *                              Admin's Account deleted with _id: 60d2066364e31665b86d6065
+ *                              Admin's Account deleted with _id: 123edfz
  *              '404':
  *                  description: The admin was not found.
  */
 
 
 
-
- router.delete('/admin/:id', function (req, res) {
-    // console.log(req.get('Content-Type')); 
-    // res.send("Hello World!! Welcome to delete an admin!!");
-    adminModel.deleteMany({_id: req.params.id}, function (err, _) {
-        if (err) {
-            res.status(404).json(err)
+ router.delete('/admindelete/:id', function (req, res) {
+    adminModel.findByIdAndDelete(req.params.id, function (err) {
+        if(err){
+            res.status(404).json({success: false, error: err});
         }
         else{
-            res.status(200).send(`The admin account deleted with id ${req.params.id}`);
+            res.status(200).send(`Admin's account deleted with _id: ${req.params.id}`);
         }
-    });
+      });
 });  
 
-/**
- * @openapi
- * /adminrights/user/{id}:
- *      delete:
- *          summary: Delete the user by its id.
- *          tags: [Users] 
- *          parameters:
- *            - in: path
- *              name: id
- *              schema:
- *                  type: string
- *              required: true
- *              description: The user id.
- *          responses:
- *              '200':
- *                  description: The user was deleted.
- *                  content:
- *                      text/plain:
- *                          schema:
- *                              User's Account deleted with _id: 60d2066364e31665b86d6065
- *              '404':
- *                  description: The User was not found.
- */
 
 
 
-router.delete('/user/:id', function (req, res) {
-    // console.log(req.get('Content-Type')); 
-    // res.send("Hello World!! Welcome to delete an admin!!");
-    userModel.deleteMany({_id: req.params.id}, function (err, _) {
-        if (err) {
-            res.status(404).json(err)
-        }
-        else{
-            res.status(200).send(`The user account deleted with id ${req.params.id}`);
-        }
+router.get('/merchants', function (req, res) {
+    axios.get(merchantservice+'/merchants').then((response) => {
+        res.send(response.data);
     });
-});  
+});
 
+
+router.post('/merchantadd', function (req, res) {
+    axios.post(merchantservice+'/merchantadd', req.body).then((response) => {
+        res.send(response.data);
+    
+    });
+});
+
+
+router.get('/dealsandcoupons', function (req, res) {
+    axios.get(dealsandcouponsservice +'/dealsandcoupons').then((response) => {
+        res.send(response.data);
+    });
+});
+
+
+router.get('/deal', function (req, res) {
+    axios.get(dealsandcouponsservice +'/deal').then((response) => {
+        res.send(response.data);
+    });
+});
+
+
+router.get('/code', function (req, res) {
+    axios.get(dealsandcouponsservice +'/code').then((response) => {
+        res.send(response.data);
+    });
+});
 
 module.exports = router;
+
