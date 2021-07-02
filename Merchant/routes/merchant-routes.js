@@ -1,5 +1,4 @@
 const express = require('express');
-const app = express();
 var merchantContoller = require('../controllers/insert-merchant-controller');
 const merchantModel = require('../models/merchant-models');
 const jwt = require('jsonwebtoken');
@@ -124,10 +123,8 @@ router.get('/merchant/:id', function (req, res) {
  *                      schema:
  *                         type: object
  *                         example:                         
- *                             id: 60d58b56305871674ce58679
- *                             merchant_name: Amazon India
- *                             email_address: amazon@gmail.com
- *                             password: amazon@123  
+ *                              { "merchant_name": "Flipkart",  "email_address": "abc@flipkart.com", "password": "flipkart@123" }
+ *                            
  * 
  *          responses:
  *              '201':
@@ -166,36 +163,33 @@ function verifyToken(req, res, next) {
       req.token = bearerToken;
       next();
     } else {
+      //Forbidden
       res.sendStatus(403);
     }
   
   }
 router.post('/signup', function(req, res) {
-    bcrypt.hash(req.body.password, 10, function(err, hash){
-       if(err) {
-          return res.status(500).json({
-             error: err
-          });
-       }
-       else {
+   //  bcrypt.hash(req.body.password, 10, function(err, hash){
+   //     if(err) {
+   //        return res.status(500).json({
+   //           error: err
+   //        });
+   //     }
+   //     else {
           const merchant = new merchantModel({
              merchant_name: req.body.merchant_name,
              email_address: req.body.email_address,
              password: hash  
           });
-          merchant.save().then(function(result) {
-             console.log(result);
-             res.status(200).json({
-                success: 'New merchant created..'
-             });
-          }).catch(error => {
-             res.status(500).json({
-                error: err
-             });
-          });
-       }
-    });
- });
+          merchant.save(function(err, created){
+            if(err){
+                return res.status(500).json({success: false, error: err});
+            }
+            else{
+                res.status(201).json({success:"New merchant has been created.", data: created})
+            }
+        });
+      })
 
 
  router.post('/signin', function(req, res){
@@ -273,20 +267,47 @@ router.post('/signup', function(req, res) {
  */
 
 
-router.put('/merchantsupdate/:id', function (req, res) {
+router.put('/merchantupdate/:id', function (req, res) {
+   var doc = req.body
+   if(req.body.password){
+      bcrypt.hash(req.body.password, 10, function(err, hash){
+         if(err) {
+            return res.status(500).json({
+               error: err
+            });
+         }
+         else{
+            doc.password = hash;
+            merchantModel.findByIdAndUpdate({_id: req.params.id}, doc , {new: true}, function(err, result){
+
+               if(err){
+                   return res.status(404).json({success: false, error: err});
+               }
+               else{
+                   res.status(200).json(result);
+               }
+
+         })
+   }
+})
+}
+else{
    merchantModel.findByIdAndUpdate({_id: req.params.id}, req.body , {new: true}, function(err, result){
+
       if(err){
           return res.status(404).json({success: false, error: err});
       }
       else{
           res.status(200).json(result);
       }
-  })
+   })
+  }
 });
+
 
 /**
  * @openapi
- * /merchantrights/deletemerchant/{id}:
+ * /merchantrights/merchantdelete/{id}:
  *      delete:
  *          summary: Delete the merchant by its id.
  *          tags: [Merchants] 
@@ -309,7 +330,7 @@ router.put('/merchantsupdate/:id', function (req, res) {
  * 
  */
 
-router.delete('/merchantsdelete/:id', function (req, res) {
+router.delete('/merchantdelete/:id', function (req, res) {
    merchantModel.deleteMany({_id: req.params.id}, function (err, _) {
       if (err) {
           return res.status(404).json({success: false, error: err});
