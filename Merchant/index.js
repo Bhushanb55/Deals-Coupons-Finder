@@ -53,5 +53,6 @@ app.listen(PORT, function(err){
 });
 
 module.exports = {
- app: app
+ app: app,
+ merchantRightsRouter: merchantRightsRouter
 }
