@@ -6,6 +6,12 @@ var bodyParser = require('body-parser');
 const swaggerJsDoc = require("swagger-jsdoc");
 const swaggerUi = require("swagger-ui-express");
 
+var cors = require('cors');
+var  corsOptions  = {
+  origin: 'http://localhost:9000', //frontend url
+  credentials: true,
+  exposedHeaders: ["set-cookie"]}
+app.use(cors(corsOptions));
 
 // Extended: https://swagger.io/specification/#infoObject
 const swaggerOptions = {
@@ -21,7 +27,7 @@ const swaggerOptions = {
     },
         servers: [
             {
-                url: "http://localhost:3000"
+                url: "http://localhost:3003"
             }
             ]
     },
@@ -37,11 +43,11 @@ const swaggerDocs = swaggerJsDoc(swaggerOptions);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 app.use(express.urlencoded({extended: true})); 
 app.use(express.json()); 
-const PORT = 3000;
+const PORT = 3003;
 
 app.get('/checking', function(req, res){
   res.json({
-     "Tutorial": "Welcome to the Node express JWT Tutorial"
+     "Tutorial": "Welcome to the Node Deals and Coupons Finder's application case study"
   });
 });
 

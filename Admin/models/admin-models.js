@@ -7,7 +7,7 @@ var adminSchema = new mongoose.Schema({
     full_name: {
         type: String,
         required: true,
-        minlength: 10,
+        minlength: 5,
         maxlength: 255
     },
     email_address: {

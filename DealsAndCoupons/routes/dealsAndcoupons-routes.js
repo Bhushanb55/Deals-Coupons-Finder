@@ -338,7 +338,7 @@ router.put('/dealsandcouponsupdate/:id', function (req, res) {
 
 /**
  * @openapi
- * /dealsorcouponsrights/dealsandcouponsdelete/{id}:
+ * /dealsandcouponsrights/dealsandcouponsdelete/{id}:
  *      delete:
  *          summary: Remove the deal/coupon by its id.
  *          tags: [DealsAndCoupons] 
@@ -363,7 +363,7 @@ router.put('/dealsandcouponsupdate/:id', function (req, res) {
  router.delete('/dealsandcouponsdelete/:id', function (req, res) {
     // console.log(req.get('Content-Type')); 
    //  res.send("Hello World!! Welcome to delete a user!!");
-   dealsOrCouponsModel.deleteMany({_id: req.params.id}, function (err, _) {
+   dealsAndCouponsModel.deleteMany({_id: req.params.id}, function (err, _) {
       if (err) {
           return res.status(404).json({success: false, error: err});
       }

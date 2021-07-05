@@ -18,7 +18,7 @@ const router = express.Router();
  * @openapi
  * components:
  *      schemas:
- *          Merchant:
+ *          merchants:
  *              type: object
  *              required:
  *                  - merchant_name
@@ -112,7 +112,7 @@ router.get('/merchant/:id', function (req, res) {
 
 /**
  * @openapi
- * /merchantrights/merchantsadd:
+ * /merchantrights/merchantadd:
  *      post:
  *          summary: Create a new merchant in the merchants collections of the Database.
  *          tags: [Merchants] 
@@ -138,7 +138,7 @@ router.get('/merchant/:id', function (req, res) {
  *                                  data: { "merchant_name": "Flipkart",  "email_address": "abc@flipkart.com", "password": "flipkart@123" }                              
  */
 
-router.post('/merchantsadd', merchantContoller);
+router.post('/merchantadd', merchantContoller);
 
 
 router.post('/api/posts', verifyToken, (req, res) => {  
@@ -168,7 +168,7 @@ function verifyToken(req, res, next) {
     }
   
   }
-router.post('/signup', function(req, res) {
+router.post('/signupmerchant', function(req, res) {
    //  bcrypt.hash(req.body.password, 10, function(err, hash){
    //     if(err) {
    //        return res.status(500).json({
@@ -192,7 +192,7 @@ router.post('/signup', function(req, res) {
       })
 
 
- router.post('/signin', function(req, res){
+ router.post('/signinmerchant', function(req, res){
 
     merchantModel.findOne({email_address: req.body.email_address})
     .exec()

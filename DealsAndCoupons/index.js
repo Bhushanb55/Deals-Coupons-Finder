@@ -12,7 +12,7 @@ const swaggerOptions = {
       openapi: '3.0.0',
       info: {
         version: "1.0.0",
-        title: "Deals and Coupons Finder App -- Deals and Coupons Microservice.",
+        title: "Deals and Coupons Finder App - Deals and Coupons Microservice",
         description: "This application is built using Node.js.",
         contact: {
           name: "Bhushan Bire"
@@ -20,7 +20,7 @@ const swaggerOptions = {
     },
         servers: [
             {
-                url: "http://localhost:3006"
+                url: "http://localhost:3001"
             }
             ]
     },
@@ -41,7 +41,7 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 app.use(express.urlencoded({extended: true})); 
 app.use(express.json()); 
-const PORT = 3006;
+const PORT = 3001;
 
 app.get('/checking', function(req, res){
   res.json({
