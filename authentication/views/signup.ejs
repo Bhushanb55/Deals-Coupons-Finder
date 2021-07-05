@@ -1,0 +1,89 @@
+<%- include('partials/header'); -%>
+
+<!-- <form action="/signup">
+  <h2>Sign up</h2>
+  <label for="email">Email</label>
+  <input type="text" name="email" required />
+  <div class="email error"></div>
+  <label for="password">Password</label>
+  <input type="password" name="password" required />
+  <div class="password error"></div>
+  <button>Sign up</button>
+</form> -->
+
+<div class="container">
+  <div class="wrapper">
+    <div class="title"><span>Registration Form</span></div>
+    <form action="/signup">
+      <div class="row">
+        <i class="fas fa-user"></i>
+        <input type="text" placeholder="Full Name" name="fullname" required>
+        <div class="name error"></div>
+      </div>
+      <div class="row">
+        <i class="fas fa-user"></i>
+        <input type="text" placeholder="Email" name="email" required>
+        <div class="email error"></div>
+      </div>
+      <div class="row">
+        <i class="fas fa-user"></i>
+        <input type="password" placeholder="Password" name="password" required>
+        <div class="password error"></div>
+      </div>
+      <div class="row">
+        <i class="fas fa-lock"></i>
+        <input type="number" placeholder="Mobile No" name="mobileno" required>
+        <div class="mobileno error"></div>
+      </div>
+      <!-- <div class="pass"><a href="#">Forgot password?</a></div> -->
+      <div class="row button">
+        <input type="submit" value="Sign Up">
+      </div>
+      <!-- <div class="signup-link">Not a member? <a href="./signup.ejs">Signup now</a></div> -->
+    </form>
+  </div>
+</div>
+
+<%- include('partials/footer'); -%>
+
+<script>
+  const form = document.querySelector('form');
+  const emailError = document.querySelector('.email.error');
+  const passwordError = document.querySelector('.password.error');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    // reset errors
+    emailError.textContent = '';
+    passwordError.textContent = '';
+
+    // get values
+    const full_name = form.fullname.value;
+    const email_address = form.email.value;
+    const password = form.password.value;
+    const mobile_number = form.mobileno.value;
+
+    try {
+      const res = await fetch('/signup', { 
+        method: 'POST', 
+        body: JSON.stringify({ full_name, email_address, password, mobile_number }),
+        headers: {'Content-Type': 'application/json'}
+      });
+      const data = await res.json();
+      console.log(data);
+      if (data.errors) {
+        emailError.textContent = data.errors.email_address;
+        passwordError.textContent = data.errors.password;
+      }
+      if (data.user) {
+        location.assign('/');
+      }
+
+    }
+    catch (err) {
+      console.log(err);
+    }
+
+  });
+</script>

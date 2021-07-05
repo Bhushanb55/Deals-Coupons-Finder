@@ -12,7 +12,7 @@ var merchantModel = require("../models/merchant-models");
 
 
 describe("GET Request", function () {
-    describe("Getting all the merchants from the merchants collection of the DealsandCouponsMerchants Database.",function(){
+    describe("Getting all the merchants from the merchants collection of the Deals and Coupons Merchants Database.",function(){
     it("A successful get request should return status code equal to 200 and all the merchants.", (done) => {
       chai.request(server.app).get("/merchantrights/merchants").end((err, res)=> {
           if (err) done(err);
@@ -35,9 +35,9 @@ describe("GET Request", function () {
 
 
 describe("GET the Request By _id", function () {
-    describe("Getting a particular merchant from the merchants collection of the DealsandCouponsMerchants Database.",function(){
+    describe("Getting a particular merchant from the merchants collection of the Deals and Coupons Merchants Database.",function(){
     it("A successful get request should return status code equal to 200 and all the particular merchant.", (done) => {
-        const id = "60d58b56305871674ce58679";
+        const id = "60e150806ae21e111c63dcd8";
         chai.request(server.app).get("/merchantrights/merchant/"+id).end((err, res)=> {
           if (err) done(err);
           expect(res).to.have.status(200);
@@ -85,7 +85,7 @@ describe("POST Request.", function(){
 describe("PUT Request.", function(){
     describe("Updating a merchant in the merchants collection of the DealsandCouponsMerchants Database.",function(){
         it("Successful updation should return status code equal to 200 and the updated merchant.", async function(){
-            const id = "60d58b56305871674ce58679";
+            const id = "60e150806ae21e111c63dcd8";
             let res = await chai
         	.request(server.app)
         	.put('/merchantrights/merchantupdate/' + id).send({
@@ -96,9 +96,9 @@ describe("PUT Request.", function(){
     expect(res).to.be.an('object');
     res.body.should.be.a('object');
     res.body.should.have.property('_id');
-    res.body.should.have.property('merchant_name').eq("Amazon");
-    res.body.should.have.property('email_address').eq("jp@amazon.com");
-    res.body.should.have.property('password');
+    res.body.should.have.property('merchant_name').eq("Flipkart.in");
+    res.body.should.have.property('email_address').eq("abc@flipkart.com");
+
      });
      it("If the id doesn't exists.", async function(){
         const id = "567";

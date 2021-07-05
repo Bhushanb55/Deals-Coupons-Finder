@@ -5,15 +5,18 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon index.js",
-    "test": "mocha --timeout 100000"
+    "test": "mocha --timeout 100000",
+    "deploy": "serverless deploy"
   },
   "author": "Bhushan",
   "license": "ISC",
   "dependencies": {
+    "aws": "0.0.3-2",
     "axios": "^0.21.1",
     "babel-register": "^6.26.0",
     "bcrypt": "^5.0.1",
     "body-parser": "^1.19.0",
+    "cli": "^1.0.1",
     "ejs": "^3.1.6",
     "express": "^4.17.1",
     "fs": "0.0.1-security",
@@ -21,6 +24,7 @@
     "moment": "^2.29.1",
     "mongoose": "^5.12.14",
     "prompt-sync": "^4.2.0",
+    "serverless-http": "^2.7.0",
     "swagger-jsdoc": "^6.1.0",
     "swagger-ui-express": "^4.1.6"
   },

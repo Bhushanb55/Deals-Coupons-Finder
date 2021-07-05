@@ -14,7 +14,7 @@ const options = {
         openapi: '3.0.0',
         info: {
             version: "1.0.0",
-            title: "Deals and Coupons Finder Application.",
+            title: "Deals and Coupons Finder Application - Merchants Microservice",
             description: "This is our first Swagger Application built in Node js.",
             contact: {
                 name: "Bhushan Bire"
@@ -22,7 +22,7 @@ const options = {
         },
         servers: [
                 {
-                    url: "http://localhost:3001"
+                    url: "http://localhost:3002"
                 }
         ]
     },
@@ -38,7 +38,7 @@ app.use(bodyParser.json());   //it parses text to json and without this data is 
 //initialize routes
 
 app.use('/merchantrights', merchantRightsRouter);
-const PORT = 3001; 
+const PORT = 3002; 
 
 //error handling middleware
 app.use(function(err, req, res, next){

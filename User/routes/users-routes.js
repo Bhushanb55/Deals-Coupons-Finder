@@ -8,6 +8,17 @@ const userModel = require('../models/user-models');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const mongoose = require('mongoose');
+const passport = require('passport');
+
+const maxAge = 3 * 24 * 60 * 60;
+var cors = require('cors');
+var  corsOptions  = {
+  origin: 'http://localhost:9000', //frontend url
+  credentials: true,
+  exposedHeaders: ["set-cookie"]}
+app.use(cors(corsOptions));
+var verify = require('../middleware/verify');
+
 
 
 /**
@@ -45,7 +56,7 @@ const mongoose = require('mongoose');
  *                      type: number
  *                      description: The 10 digit mobile number of the user.
  *              example:
- *                  id: d5fE_asz
+ *                  id: 60d0daa888183a30b47a0a1b
  *                  full_name: Bhushan Bire
  *                  email_address: bhushan@gmail.com
  *                  password: bhushan@123
@@ -99,7 +110,7 @@ router.get('/users', function (req, res) {
  *                          schema:
  *                              type: object
  *                              example:
- *                                  _id: d5fE_asz
+ *                                  _id: 60d0daa888183a30b47a0a1b
  *                                  full_name: Bhushan Bire
  *                                  email_address: bhushan@gmail.com
  *                                  password: bhushan@123
@@ -123,7 +134,7 @@ router.get('/user/:id', function (req, res) {
  * @openapi
  * /userrights/usersadd:
  *      post:
- *          summary: Create a new user in the users collections of the DealsandCouponsUsers Database.
+ *          summary: Create a new user in the users collections of the Deals and Coupons Users Database.
  *          tags: [Users] 
  *          requestBody:
  *              required: true
@@ -170,7 +181,7 @@ const authenticateJWT = (req, res, next) => {
  };
 
 
-router.post('/api/posts', verifyToken, (req, res) => {  
+router.post('/api/posts', verify, (req, res) => {  
     jwt.verify(req.token, 'secretkey', (err, authData) => {
       if(err) {
         res.sendStatus(403);
@@ -183,26 +194,28 @@ router.post('/api/posts', verifyToken, (req, res) => {
     });
   });
 
-  // Verify Token
-function verifyToken(req, res, next) {
-    // Get auth header value
-    const bearerHeader = req.headers['authorization'];
-    // Check if bearer is undefined
-    if(typeof bearerHeader !== 'undefined') {
-      // Split at the space
-      const bearer = bearerHeader.split(' ');
-      // Get token from array
-      const bearerToken = bearer[1];
-      // Set the token
-      req.token = bearerToken;
-      // Next middleware
-      next();
-    } else {
-      // Forbidden
-      res.sendStatus(403);
-    }
+//   // Verify Token
+// function verifyToken(req, res, next) {
+//     // Get auth header value
+//     const bearerHeader = req.headers['authorization'];
+//     // Check if bearer is undefined
+//     if(typeof bearerHeader !== 'undefined') {
+//       // Split at the space
+//       const bearer = bearerHeader.split(' ');
+//       // Get token from array
+//       const bearerToken = bearer[1];
+//       // Set the token
+//       req.token = bearerToken;
+//       // Next middleware
+//       next();
+//     } else {
+//       // Forbidden
+//       res.sendStatus(403);
+//     }
   
-  }
+//   }
+
+
 router.post('/signup', function(req, res) {
    var mailer = require('../../mail/server');
    mailer(req.body.email_address);
@@ -217,7 +230,7 @@ router.post('/signup', function(req, res) {
          return res.status(500).json({success: false, error: err});
      }
      else{
-         res.status(201).json({success:"New user has been created.", data: created})
+         res.status(201).json({success:"Succesful Registration ..... Please Login", data: created})
      }
  });
 });
@@ -240,10 +253,23 @@ router.post('/signup', function(req, res) {
           },
           'secretkey',
            {
-             expiresIn: '2h'
+             expiresIn: maxAge
            });
+
+           //  app.use(function(req, res, next) {
+            // res.setheader('Access-Control-Allow-Credentials', true);
+            // res.setheader('Access-Control-Allow-Origin', req.headers.origin);
+            // res.setheader('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,UPDATE,OPTIONS');
+            // res.setheader('Access-Control-Allow-Headers', 'X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept');
+            // next();
+          // });
+
+
+          res.setHeader('Access-Control-Allow-Origin', 'http://localhost:9000/signin');
+          res.setHeader('Access-Control-Allow-Credentials',true);
+          res.cookie('jwt', JWTToken, {httpOnly: true, maxAge: maxAge * 1000})
            return res.status(200).json({
-             success: 'Welcome to the JWT Auth',
+             success: 'Login succesfully...',
              token: JWTToken
            });
           }
@@ -259,12 +285,34 @@ router.post('/signup', function(req, res) {
     });
  });
 
+  router.get('/logout', function(req, res) {
+  // res.cookie('jwt', '', { maxAge: 1 }).send("Logged out successfully..")
+  res.send("Logged out successfully..")
+});
+
+
+  // function isLoggedIn(req, res, next) {
+  //   if (req.isAuthenticated()) {
+  //     next();
+  //   } else {
+  //     res.send("You're not logged in..");
+  //   }
+  // };
+  
+  // function isNotLoggedIn(req, res, next)  {
+  //   console.log("isnot");
+  //   if (!req.isAuthenticated()) {
+  //     next();
+  //   } else {
+  //     res.send("You are already logged in..");
+  //   }
+  // };
 
  /**
  * @openapi
  * /userrights/userupadte/{id}:
  *      put:
- *          summary: Update a user by its id in the users collections of the DealsandCouponsUsers Database.
+ *          summary: Update a user by its id in the users collections of the Deals and Coupons Users Database.
  *          tags: [Users] 
  *          parameters:
  *            - in: path
@@ -288,11 +336,11 @@ router.post('/signup', function(req, res) {
  *                          schema:
  *                              type: object
  *                              example: 
- *                                  id: d5fE_asz
- *                                  full_name: Amit Mahadik
- *                                  email_address: abx@gmail.com
- *                                  password: abc123$%
- *                                  mobile_number: 7890656783
+ *                                  _id: 60d0daa888183a30b47a0a1b
+ *                                  full_name: Bhushan Bire
+ *                                  email_address: bhushan@gmail.com
+ *                                  password: bhushan@123
+ *                                  mobile_number: 7020078196
  *              '404':
  *                  description: The user was not found.
  *              '500':
@@ -300,7 +348,7 @@ router.post('/signup', function(req, res) {
  */
 
 
-router.put('/usersupdate/:id', function (req, res) {
+router.put('/userupdate/:id', function (req, res) {
    var doc = req.body
    if(req.body.password){
       bcrypt.hash(req.body.password, 10, function(err, hash){
